@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: karsajobs-ui-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: karsajobs-ui
+  template:
+    metadata:
+      labels:
+        app: karsajobs-ui
+    spec:
+      containers:
+      - name: karsajobs-ui
+        image: <username-docker>/karsajobs-ui:latest
+        ports:
+        - containerPort: 4200
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+
