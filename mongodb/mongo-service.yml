@@ -1,13 +1,19 @@
+# Specify the API version
 apiVersion: v1
+#  Specify type of the Kubernetes resource
 kind: Service
+# Define metadata for the Service resource
 metadata:
-  name: mongo-service
+  name: mongo
+  labels:
+    app: mongo
+# Define the specification for the Service
 spec:
+  # Define the ports that the service is listening on
+  ports:
+    - port: 27017
+  # Service will proxy traffic to pods that have the label app: mongo
   selector:
     app: mongo
-  ports:
-  - name: mongo
-    port: 27017
-    targetPort: 27017
-  type: ClusterIP
-
+  # Disable the allocation of a cluster IP, service will only be accessible through the endpoints
+  clusterIP: None

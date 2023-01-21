@@ -1,13 +1,21 @@
+# Specify the API version
 apiVersion: v1
+#  Specify type of the Kubernetes resource
 kind: Service
+# Define metadata for the Service resource
 metadata:
-  name: karsajobs-ui-service
+  # Specify the name of the Service
+  name: frontend
+  # Specify key-value pairs that are used to identify and organize resources
+  labels:
+    app: frontend
+# Define the specification of the Service resource
 spec:
-  selector:
-    app: karsajobs-ui
+  # Specify the ports that the Service should listen on
   ports:
-  - name: http
-    port: 80
-    targetPort: 4200
-  type: ClusterIP
-
+    - port: 8080
+  # Specify the label selector that is used to match pods to be controlled by this Service
+  selector:
+    app: frontend
+  # Expose the service on each Node's IP at a static port
+  type: NodePort

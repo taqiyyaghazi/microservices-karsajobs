@@ -1,32 +1,68 @@
+# Specify the API version
 apiVersion: apps/v1
+#  Specify type of the Kubernetes resource
 kind: StatefulSet
+# Define metadata for the StatefulSet resource
 metadata:
   name: mongo
+  labels:
+    app: mongo
+# Define the specification of the StatefulSet resource
 spec:
   selector:
+    # Select pods that have a label of app: mongo
     matchLabels:
       app: mongo
-  serviceName: "mongo-service"
+  serviceName: mongo
+  # Specify the number of replicas
   replicas: 1
+  # Set the minimum amount of time that must pass before the pods are considered ready
+  minReadySeconds: 10
+  # Specify the details of the pods that will be created by the StatefulSet
   template:
     metadata:
       labels:
         app: mongo
     spec:
+      # Set after a container is terminated, the kubelet will wait for 10 seconds before forcefully killing the container
+      terminationGracePeriodSeconds: 10
+      # Define the container that will run in the pod
       containers:
-      - name: mongo
-        image: mongo:latest
-        ports:
-        - containerPort: 27017
-        volumeMounts:
+        # Specify the name of the container
+        - name: mongo
+          # specifies the Docker image that the container should use
+          image: mongo:latest
+          # Specify the policy that the image will only be pulled if it's not already present on the node
+          imagePullPolicy: IfNotPresent
+          # Define the environment variables that the container should use
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD
+          # Specify the ports that the container should listen on
+          ports:
+            - containerPort: 27017
+              name: mongo
+          # Container has three volumeMounts
+          volumeMounts:
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+            - name: mongo-configmap
+              mountPath: /config
+            - name: mongo-secret
+              mountPath: /etc/mongo-credentials
+      # Define the volumes that will be used by the StatefulSet
+      volumes:
         - name: mongo-persistent-storage
-          mountPath: /data/db
-  volumeClaimTemplates:
-  - metadata:
-      name: mongo-persistent-storage
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 1Gi
-
+          persistentVolumeClaim:
+            claimName: mongo-pv-claim
+        - name: mongo-configmap
+          configMap:
+            name: mongo-configmap
+            items:
+              - key: mongo.conf
+                path: mongo.conf
+        - name: mongo-secret
+          secret:
+            secretName: mongo-secret
