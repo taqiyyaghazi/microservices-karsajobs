@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: IfNotPresent
           # Specify the ports that the container should listen on
           ports:
-            - containerPort: 8080
+            - containerPort: 8000
           # Define the environment variables that the container should use
           env:
             - name: VUE_APP_BACKEND
