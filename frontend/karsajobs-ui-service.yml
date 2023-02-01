@@ -13,7 +13,7 @@ metadata:
 spec:
   # Specify the ports that the Service should listen on
   ports:
-    - port: 8080
+    - port: 8000
   # Specify the label selector that is used to match pods to be controlled by this Service
   selector:
     app: frontend
